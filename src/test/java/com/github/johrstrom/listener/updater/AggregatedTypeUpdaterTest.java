@@ -62,7 +62,7 @@ public class AggregatedTypeUpdaterTest {
 		List<MetricFamilySamples> metrics = collector.collect();
 		assertEquals(1, metrics.size());
 		MetricFamilySamples family = metrics.get(0);
-		assertEquals(7, family.samples.size()); 	// 4 buckets + Inf + count + sum
+		assertEquals(8, family.samples.size()); 	// 4 buckets + Inf + count + sum
 		
 		
 		for(Sample sample : family.samples) {
@@ -80,15 +80,17 @@ public class AggregatedTypeUpdaterTest {
 			assertTrue(correctLabels);
 			
 			// _sum and _count don't have an 'le' label
-			if(sample.name.endsWith("count") || sample.name.endsWith("sum")) {
+			if(sample.name.endsWith("count") || sample.name.endsWith("sum") || sample.name.endsWith("created")) {
 				assertTrue(values.size() == 3 && names.size() == 3);
-				
-				if(sample.name.endsWith("count")) {
+
+				if(sample.name.endsWith("count") ) {
 					Assert.assertEquals(1, sample.value, 0.1);
+				}else if(sample.name.endsWith("created")) {
+					Assert.assertEquals(sample.value, sample.value, 0.1);
 				}else {
 					Assert.assertEquals(responseTime, sample.value, 0.1);
 				}
-				
+
 			}else {
 				assertTrue(values.size() == 4 && names.size() == 4);
 				
@@ -143,7 +145,7 @@ public class AggregatedTypeUpdaterTest {
 		List<MetricFamilySamples> metrics = collector.collect();
 		assertEquals(1, metrics.size());
 		MetricFamilySamples family = metrics.get(0);
-		assertEquals(5, family.samples.size()); 	// 3 quantiles + count + sum
+		assertEquals(6, family.samples.size()); 	// 3 quantiles + count + sum
 		
 		
 		for(Sample sample : family.samples) {
@@ -161,11 +163,13 @@ public class AggregatedTypeUpdaterTest {
 			assertTrue(correctLabels);
 			
 			// _sum and _count don't have an 'le' label
-			if(sample.name.endsWith("count") || sample.name.endsWith("sum")) {
+			if(sample.name.endsWith("count") || sample.name.endsWith("sum") || sample.name.endsWith("created")) {
 				assertTrue(values.size() == 3 && names.size() == 3);
-				
-				if(sample.name.endsWith("count")) {
+
+				if(sample.name.endsWith("count") ) {
 					Assert.assertEquals(1, sample.value, 0.1);
+				}else if(sample.name.endsWith("created")) {
+					Assert.assertEquals(sample.value, sample.value, 0.1);
 				}else {
 					Assert.assertEquals(responseTime, sample.value, 0.1);
 				}
@@ -212,7 +216,7 @@ public class AggregatedTypeUpdaterTest {
 		List<MetricFamilySamples> metrics = collector.collect();
 		Assert.assertEquals(1, metrics.size());
 		MetricFamilySamples family = metrics.get(0);
-		Assert.assertEquals(7, family.samples.size()); 	// 4 buckets + Inf + count + sum
+		Assert.assertEquals(8, family.samples.size()); 	// 4 buckets + Inf + count + sum
 		
 		
 		for(Sample sample : family.samples) {
@@ -222,11 +226,13 @@ public class AggregatedTypeUpdaterTest {
 			this.correctLabels(names, values);
 			
 			// _sum and _count don't have an 'le' label
-			if(sample.name.endsWith("count") || sample.name.endsWith("sum")) {
+			if(sample.name.endsWith("count") || sample.name.endsWith("sum") || sample.name.endsWith("created")) {
 				assertTrue(values.size() == 3 && names.size() == 3);
 				
-				if(sample.name.endsWith("count")) {
+				if(sample.name.endsWith("count") ) {
 					Assert.assertEquals(1, sample.value, 0.1);
+				}else if(sample.name.endsWith("created")) {
+					Assert.assertEquals(sample.value, sample.value, 0.1);
 				}else {
 					Assert.assertEquals(responseSize, sample.value, 0.1);
 				}
@@ -283,7 +289,7 @@ public class AggregatedTypeUpdaterTest {
 		List<MetricFamilySamples> metrics = collector.collect();
 		Assert.assertEquals(1, metrics.size());
 		MetricFamilySamples family = metrics.get(0);
-		Assert.assertEquals(5, family.samples.size()); 	// 3 quantiles + count + sum
+		Assert.assertEquals(6, family.samples.size()); 	// 3 quantiles + count + sum
 		
 		
 		for(Sample sample : family.samples) {
@@ -293,15 +299,17 @@ public class AggregatedTypeUpdaterTest {
 			this.correctLabels(names, values);
 			
 			// _sum and _count don't have an 'le' label
-			if(sample.name.endsWith("count") || sample.name.endsWith("sum")) {
+			if(sample.name.endsWith("count") || sample.name.endsWith("sum") || sample.name.endsWith("created")) {
 				assertTrue(values.size() == 3 && names.size() == 3);
-				
-				if(sample.name.endsWith("count")) {
+
+				if(sample.name.endsWith("count") ) {
 					Assert.assertEquals(1, sample.value, 0.1);
+				}else if(sample.name.endsWith("created")) {
+					Assert.assertEquals(sample.value, sample.value, 0.1);
 				}else {
 					Assert.assertEquals(responseSize, sample.value, 0.1);
 				}
-				
+
 			}else {
 				assertTrue(values.size() == 4 && names.size() == 4);
 				Assert.assertEquals(responseSize, sample.value, 0.1);

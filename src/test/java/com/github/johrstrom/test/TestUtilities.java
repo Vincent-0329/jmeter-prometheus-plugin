@@ -28,10 +28,11 @@ public class TestUtilities {
 	public static final String TEST_ASSERTION_NAME_ALT = "other_super_cool_assertion";
 	public static final String TEST_SAMPLER_CODE = "909";
 	public static final String TEST_VAR_VALUE = "bar_value";
-	public static final String TEST_THREADNAME = "super_cool_name";
+	public static final String TEST_THREADGROUP = "super_cool_group";
 
-	public static final String[] TEST_LABELS = new String[] {TEST_VAR_NAME,"label","threadname","code"};
-	public static final String[] EXPECTED_LABELS = new String[] {TEST_VAR_VALUE, TEST_SAMPLER_NAME, "super_cool_name", TEST_SAMPLER_CODE};
+	public static final String[] TEST_LABELS = new String[] {TEST_VAR_NAME,"label","threadgroup","code"};
+	public static final String[] TEST_LABELS_2 = new String[] {TEST_VAR_NAME,"failuremessage","responsedata","label","threadgroup","code"};
+	public static final String[] EXPECTED_LABELS = new String[] {TEST_VAR_VALUE, TEST_SAMPLER_NAME, TEST_THREADGROUP, TEST_SAMPLER_CODE};
 	
 	public static final String[] TEST_ASSERTION_LABELS = new String[] {TEST_VAR_NAME,"label"};
 	public static final String[] EXPECTED_ASSERTION_LABELS = new String[] {TEST_VAR_VALUE, TEST_ASSERTION_NAME};
@@ -94,6 +95,15 @@ public class TestUtilities {
 		
 		return cfg;
 	}
+
+	public static BaseCollectorConfig simpleAsseFailCfg() {
+		ListenerCollectorConfig cfg = new ListenerCollectorConfig();
+		cfg.setMetricName("simple_counttype2assertfail");
+		cfg.setType(JMeterCollectorType.COUNTERFORASSE.toString());
+		cfg.setHelp("some helpe message");
+
+		return cfg;
+	}
 	
 	public static BaseCollectorConfig simpleSuccessRatioCfg() {
 		BaseCollectorConfig cfg = new BaseCollectorConfig();
@@ -149,8 +159,9 @@ public class TestUtilities {
     	list.add(simpleHistogramCfg());
     	list.add(simpleSummaryCfg());
     	list.add(simpleCounterCfg());
-    	list.add(simpleSuccessRatioCfg());
-    	
+		list.add(simpleSuccessRatioCfg());
+		list.add((simpleAsseFailCfg()));
+
     	return list;
     }
     
@@ -162,8 +173,9 @@ public class TestUtilities {
     	list.add(new ListenerCollectorConfig(simpleSummaryCfg()));
     	list.add(new ListenerCollectorConfig(simpleCounterCfg()));
     	list.add(new ListenerCollectorConfig(simpleSuccessRatioCfg()));
-    	
-    	return list;
+		list.add(new ListenerCollectorConfig(simpleAsseFailCfg()));
+
+		return list;
     }
     
     public static List<ListenerCollectorConfig> fullListListener(){
@@ -217,7 +229,12 @@ public class TestUtilities {
     	
     	cfg = redoNameAndMeasuring(cfg, "test_summary_connect_time", Measurable.ConnectTime);
     	list.add(cfg);
-    	
+
+		ListenerCollectorConfig lcc= (ListenerCollectorConfig) simpleAsseFailCfg();
+		lcc.setListenTo(ListenerCollectorConfig.ASSERTIONS);
+		lcc = redoNameAndMeasuring(lcc, "test_Info_failureMessage", Measurable.failureMessage);
+		list.add(lcc);
+
     	return list;
     }
     

@@ -2,11 +2,15 @@ package com.github.johrstrom.collector;
 
 import com.github.johrstrom.collector.BaseCollectorConfig.JMeterCollectorType;
 import com.github.johrstrom.collector.BaseCollectorConfig.QuantileDefinition;
+import com.github.johrstrom.listener.ListenerCollectorConfig;
+import com.github.johrstrom.listener.PrometheusListener;
 import com.github.johrstrom.test.TestUtilities;
 import io.prometheus.client.*;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 //import io.prometheus.client.Collector.Type;

@@ -30,6 +30,8 @@ public class ConfigCollectorTable extends AbstractCollectorTable<BaseCollectorCo
 		typeComboBox.addItem(JMeterCollectorType.SUMMARY.toString());
 		typeComboBox.addItem(JMeterCollectorType.HISTOGRAM.toString());
 		typeComboBox.addItem(JMeterCollectorType.GAUGE.toString());
+		typeComboBox.addItem(JMeterCollectorType.INFO.toString());
+		typeComboBox.addItem(JMeterCollectorType.COUNTERFORASSE.toString());
 		typeComboBox.addItem(JMeterCollectorType.SUCCESS_RATIO.toString());
 	}
 	

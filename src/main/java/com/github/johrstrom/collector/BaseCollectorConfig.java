@@ -60,6 +60,8 @@ public class BaseCollectorConfig extends AbstractTestElement  {
 		GAUGE,
 		HISTOGRAM,
 		SUMMARY,
+		INFO,
+		COUNTERFORASSE,
 		SUCCESS_RATIO
 	}
 
@@ -261,12 +263,25 @@ public class BaseCollectorConfig extends AbstractTestElement  {
 		return builder.create();
 	}
 
+	public static Info newInfo(BaseCollectorConfig cfg) throws Exception {
+		Info.Builder builder = new Info.Builder()
+				.help(cfg.getHelp())
+				.name(cfg.getMetricName());
+
+		String[] labels = cfg.getLabels();
+		if(labels.length != 0) {
+			builder.labelNames(labels);
+		}
+
+		return builder.create();
+	}
+
 	public static Collector fromConfig(BaseCollectorConfig cfg) {
 		JMeterCollectorType t = cfg.getCollectorType();
 		Collector c = null;
 
 		try {
-			if(t.equals(JMeterCollectorType.COUNTER)) {
+			if(t.equals(JMeterCollectorType.COUNTER)||t.equals(JMeterCollectorType.COUNTERFORASSE)) {
 				c = BaseCollectorConfig.newCounter(cfg);
 
 			}else if(t.equals(JMeterCollectorType.SUMMARY)) {
@@ -276,6 +291,8 @@ public class BaseCollectorConfig extends AbstractTestElement  {
 				c = BaseCollectorConfig.newHistogram(cfg);
 			}else if(t.equals(JMeterCollectorType.GAUGE)) {
 				c = BaseCollectorConfig.newGauge(cfg);
+			}else if(t.equals(JMeterCollectorType.INFO)) {
+				c = BaseCollectorConfig.newInfo(cfg);
 			}else if(t.equals(JMeterCollectorType.SUCCESS_RATIO)) {
 				c = new SuccessRatioCollector(cfg);
 			}
