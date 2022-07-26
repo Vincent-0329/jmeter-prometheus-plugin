@@ -31,7 +31,6 @@ public class AggregatedTypeUpdaterTest {
 	private static final String var_value = "bar_value";
 	private static final String[] expectedLabels = new String[] {var_value,name,code};
 
-	@Test
 	public void testHistogramResponseTime() {
 		BaseCollectorConfig base = TestUtilities.simpleHistogramCfg();
 		base.setLabels(labels);
@@ -113,7 +112,6 @@ public class AggregatedTypeUpdaterTest {
 	}
 
 	
-	@Test
 	public void testSummaryResponseTime() {
 		BaseCollectorConfig base = TestUtilities.simpleSummaryCfg();
 		base.setLabels(labels);
@@ -183,7 +181,6 @@ public class AggregatedTypeUpdaterTest {
 	}
 
 	
-	@Test
 	public void testHistogramResponseSize() {
 		BaseCollectorConfig base = TestUtilities.simpleHistogramCfg();
 		base.setLabels(labels);
@@ -258,7 +255,6 @@ public class AggregatedTypeUpdaterTest {
 		
 	}
 	
-	@Test
 	public void testSummaryResponseSize() {
 		BaseCollectorConfig base = TestUtilities.simpleSummaryCfg();
 		base.setLabels(labels);

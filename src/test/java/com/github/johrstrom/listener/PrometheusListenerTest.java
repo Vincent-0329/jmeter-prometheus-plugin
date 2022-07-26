@@ -106,7 +106,7 @@ public class PrometheusListenerTest {
         cfg.setLabels(TestUtilities.TEST_LABELS_2);
 
         ListenerCollectorConfig lc = new ListenerCollectorConfig(cfg);
-        lc.setMeasuring(ListenerCollectorConfig.Measurable.failureMessage.toString());
+        lc.setMeasuring(ListenerCollectorConfig.Measurable.failureMessageAssert.toString());
         lc.setMetricName("test_info_failuremessage");
         lc.setListenTo(ListenerCollectorConfig.ASSERTIONS);
 
@@ -125,7 +125,7 @@ public class PrometheusListenerTest {
 
         ResultAndVariables res = TestUtilities.resultWithLabels();
         res.result.setConnectTime(connectTime);
-        res.result.setResponseData(new byte[1]);
+        res.result.setResponseData(new byte[1000]);
         res.result.setLatency(latency);
         res.result.setIdleTime(idleTime);
         res.result.setStampAndTime(System.currentTimeMillis(), elapsedTime);
@@ -137,10 +137,6 @@ public class PrometheusListenerTest {
 
         SampleEvent event = new SampleEvent(res.result, "tg1", res.vars);
         listener.sampleOccurred(event); // 1st event, successful
-
-        while(true){
-            Thread.sleep(10000);
-        }
 
     }
     @Test
@@ -180,9 +176,6 @@ public class PrometheusListenerTest {
         SampleEvent event = new SampleEvent(res.result, "tg1", res.vars);
         listener.sampleOccurred(event); // 1st event, successful
 
-        while(true){
-            Thread.sleep(10000);
-        }
     }
 
     public void updateAllTypes() {

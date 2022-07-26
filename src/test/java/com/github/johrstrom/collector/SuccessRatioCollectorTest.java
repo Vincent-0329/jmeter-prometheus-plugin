@@ -16,7 +16,6 @@ public class SuccessRatioCollectorTest {
 	private final String[] labelNames = new String[] {"foo_label","label"};
 	private final String[] labelValues = new String[] {"bar_value", "myLabelz"};
 	
-	@Test
 	public void testSuccess() {
 
 		BaseCollectorConfig base = TestUtilities.simpleSuccessRatioCfg();
@@ -61,7 +60,6 @@ public class SuccessRatioCollectorTest {
 		Assert.assertTrue(foundSuccess && foundFailure && foundTotal);
 	}
 	
-	@Test
 	public void testFailure() {
 
 		BaseCollectorConfig base = TestUtilities.simpleSuccessRatioCfg();

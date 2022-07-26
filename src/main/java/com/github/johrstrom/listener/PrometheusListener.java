@@ -189,10 +189,10 @@ public class PrometheusListener extends CollectorElement<ListenerCollectorConfig
                         updater = new AggregatedTypeUpdater(config);
                         break;
                     case failureMessage:
-                        updater = new CountType2AssertFailUpdater(config);
+                        updater = new CountType2FailUpdater(config);
                         break;
-                    case info:
-                        updater = new InfoTypeUpdater(config);
+                    case failureMessageAssert:
+                        updater = new CountType2AssertFailUpdater(config);
                         break;
                     default:
                         // hope our IDEs are telling us to use all possible enums!

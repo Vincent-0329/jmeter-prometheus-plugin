@@ -93,6 +93,9 @@ public abstract class AbstractUpdater {
                 value = event.getResult().getResponseCode();
 
                 // try to find it as a plain'ol variable.
+            } else if (name.equalsIgnoreCase("responseMessage")) {
+                value = event.getResult().getResponseMessage();
+                // try to find it as a plain'ol variable.
             } else if (this.varIndexLookup.get(name) != null) {
                 int idx = this.varIndexLookup.get(name);
                 value = event.getVarValue(idx);
@@ -128,12 +131,11 @@ public abstract class AbstractUpdater {
                 value = ctx.event.getResult().getFirstAssertionFailureMessage();
 
             } else if (name.equalsIgnoreCase("responsedata")) {
-                byte[] bb = new byte[1024];
-                System.out.println(bb.length);
-                if (ctx.event.getResult().getResponseData().length == 0) {
+                String rd = ctx.event.getResult().getResponseDataAsString();
+                if (rd.hashCode() == 0) {
                     value = null;
                 } else {
-                    value = ctx.event.getResult().getResponseDataAsString();
+                    value = rd;
                 }
                 // try to find it as a plain'ol variable.
             } else if (this.varIndexLookup.get(name) != null) {

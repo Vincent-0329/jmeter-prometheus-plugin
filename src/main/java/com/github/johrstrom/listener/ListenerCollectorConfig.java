@@ -36,7 +36,7 @@ public class ListenerCollectorConfig extends BaseCollectorConfig {
 		CountTotal,
 		SuccessRatio,
 		failureMessage,
-		info;
+		failureMessageAssert;
 	}
 	
 	public void setListenTo(String listenTo) {

@@ -99,7 +99,7 @@ public class TestUtilities {
 	public static BaseCollectorConfig simpleAsseFailCfg() {
 		ListenerCollectorConfig cfg = new ListenerCollectorConfig();
 		cfg.setMetricName("simple_counttype2assertfail");
-		cfg.setType(JMeterCollectorType.COUNTERFORASSE.toString());
+		cfg.setType(JMeterCollectorType.COUNTERFOR.toString());
 		cfg.setHelp("some helpe message");
 
 		return cfg;
