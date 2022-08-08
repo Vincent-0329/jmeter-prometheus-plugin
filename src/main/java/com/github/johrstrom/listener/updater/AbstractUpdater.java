@@ -9,6 +9,7 @@ import org.apache.jmeter.threads.JMeterVariables;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The Updater family of classes are meant to update the actual Collectors given the configuration. The main problem
@@ -29,6 +30,10 @@ public abstract class AbstractUpdater {
 
     // helper lookup table for sample variables, so we don't loop over arrays every update.
     private Map<String, Integer> varIndexLookup;
+
+
+    private ConcurrentHashMap<Integer, String> responseMetricsAsser = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, String> responseMetrics = new ConcurrentHashMap<>();
 
     /**
      * All subclasses should have this and only this constructor signature.
@@ -94,6 +99,7 @@ public abstract class AbstractUpdater {
 
                 // try to find it as a plain'ol variable.
             } else if (name.equalsIgnoreCase("responseMessage")) {
+
                 value = event.getResult().getResponseMessage();
                 // try to find it as a plain'ol variable.
             } else if (this.varIndexLookup.get(name) != null) {
@@ -131,12 +137,26 @@ public abstract class AbstractUpdater {
                 value = ctx.event.getResult().getFirstAssertionFailureMessage();
 
             } else if (name.equalsIgnoreCase("responsedata")) {
-                String rd = ctx.event.getResult().getResponseDataAsString();
-                if (rd.hashCode() == 0) {
-                    value = null;
-                } else {
-                    value = rd;
+                String tmp = ctx.event.getResult().getResponseDataAsString();
+
+                String[] tmps = tmp.split("\n");
+                String newString = "";
+                for (int j = 0; j < tmps.length; j++) {
+                    if (j != 4 || j != 5 || j != 8 || j != 31 || j != 32) {
+                        newString = newString + tmps[j];
+                    } else {
+                        continue;
+                    }
                 }
+
+                Integer rescode = newString.hashCode();
+                if (responseMetricsAsser.containsKey(rescode)) {
+                    value = responseMetricsAsser.get(rescode);
+                } else {
+                    responseMetricsAsser.put(rescode, tmp);
+                    value = tmp;
+                }
+
                 // try to find it as a plain'ol variable.
             } else if (this.varIndexLookup.get(name) != null) {
                 int idx = this.varIndexLookup.get(name);
