@@ -31,7 +31,8 @@ public class TestUtilities {
 	public static final String TEST_THREADGROUP = "super_cool_group";
 
 	public static final String[] TEST_LABELS = new String[] {TEST_VAR_NAME,"label","threadgroup","code"};
-	public static final String[] TEST_LABELS_2 = new String[] {TEST_VAR_NAME,"failuremessage","responsedata","label","threadgroup","code"};
+	public static final String[] TEST_LABELS_2 = new String[] {TEST_VAR_NAME,"responsedata","label","threadgroup","code"};
+	public static final String[] TEST_LABELS_3 = new String[] {TEST_VAR_NAME,"label","threadgroup","success"};
 	public static final String[] EXPECTED_LABELS = new String[] {TEST_VAR_VALUE, TEST_SAMPLER_NAME, TEST_THREADGROUP, TEST_SAMPLER_CODE};
 	
 	public static final String[] TEST_ASSERTION_LABELS = new String[] {TEST_VAR_NAME,"label"};
@@ -98,7 +99,7 @@ public class TestUtilities {
 
 	public static BaseCollectorConfig simpleAsseFailCfg() {
 		ListenerCollectorConfig cfg = new ListenerCollectorConfig();
-		cfg.setMetricName("simple_counttype2assertfail");
+		cfg.setMetricName("simple_assert");
 		cfg.setType(JMeterCollectorType.COUNTERFOR.toString());
 		cfg.setHelp("some helpe message");
 
@@ -232,7 +233,7 @@ public class TestUtilities {
 
 		ListenerCollectorConfig lcc= (ListenerCollectorConfig) simpleAsseFailCfg();
 		lcc.setListenTo(ListenerCollectorConfig.ASSERTIONS);
-		lcc = redoNameAndMeasuring(lcc, "test_Info_failureMessage", Measurable.failureMessage);
+		lcc.setMeasuring(String.valueOf(Measurable.failureMessageAssert));
 		list.add(lcc);
 
     	return list;

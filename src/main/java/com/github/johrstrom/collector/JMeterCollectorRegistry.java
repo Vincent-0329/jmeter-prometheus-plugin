@@ -1,5 +1,7 @@
 package com.github.johrstrom.collector;
 
+import com.github.johrstrom.listener.utils.InitResponseDataMatchRows;
+import com.github.johrstrom.listener.utils.ScheduleForLatency;
 import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Gauge;

@@ -21,6 +21,8 @@ package com.github.johrstrom.listener;
 import com.github.johrstrom.collector.CollectorElement;
 import com.github.johrstrom.collector.JMeterCollectorRegistry;
 import com.github.johrstrom.listener.updater.*;
+import com.github.johrstrom.listener.utils.InitResponseDataMatchRows;
+import com.github.johrstrom.listener.utils.ScheduleForLatency;
 import io.prometheus.client.Collector;
 import org.apache.jmeter.engine.util.NoThreadClone;
 import org.apache.jmeter.samplers.SampleEvent;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The main test element listener class of this library. Jmeter updates this
@@ -63,7 +66,21 @@ public class PrometheusListener extends CollectorElement<ListenerCollectorConfig
      */
     @Override
     public void sampleOccurred(SampleEvent event) {
-
+        // get latency & Calculate the AVGLatency
+        String threadGroup = event.getThreadGroup();
+        long latency = event.getResult().getLatency();
+        ConcurrentHashMap<String, Long[]> chm = ScheduleForLatency.getScheduleLatency();
+        if (chm.containsKey(threadGroup)) {
+            Long[] values = chm.get(threadGroup);
+            values[0] = values[0] + latency;
+            values[1] = values[1] + 1;
+            chm.put(threadGroup, values);
+        } else {
+            Long[] values = new Long[2];
+            values[0] = latency;
+            values[1] = 1l;
+            chm.put(threadGroup, values);
+        }
         for (AbstractUpdater updater : this.updaters) {
             updater.update(event);
         }
@@ -165,7 +182,8 @@ public class PrometheusListener extends CollectorElement<ListenerCollectorConfig
         this.updaters = new ArrayList<AbstractUpdater>();
 
         CollectionProperty collectorDefs = this.getCollectorConfigs();
-
+        boolean latencyRan = true;
+        boolean failureMessageAssertRan = true;
         for (JMeterProperty collectorDef : collectorDefs) {
 
             try {
@@ -184,14 +202,22 @@ public class PrometheusListener extends CollectorElement<ListenerCollectorConfig
                     case ResponseSize:
                     case ResponseTime:
                     case Latency:
+                        // run once
+                        if (latencyRan) {
+                            ScheduleForLatency.LatencySehedule();
+                            latencyRan = false;
+                        }
                     case IdleTime:
                     case ConnectTime:
                         updater = new AggregatedTypeUpdater(config);
                         break;
-                    case failureMessage:
-                        updater = new CountType2FailUpdater(config);
-                        break;
                     case failureMessageAssert:
+                        // run once
+                        if (failureMessageAssertRan) {
+                            InitResponseDataMatchRows.initRows();
+                            failureMessageAssertRan = false;
+                        }
+
                         updater = new CountType2AssertFailUpdater(config);
                         break;
                     default:

@@ -2,13 +2,16 @@ package com.github.johrstrom.listener.updater;
 
 import com.github.johrstrom.collector.JMeterCollectorRegistry;
 import com.github.johrstrom.listener.ListenerCollectorConfig;
+import com.github.johrstrom.listener.utils.InitResponseDataMatchRows;
 import org.apache.jmeter.assertions.AssertionResult;
 import org.apache.jmeter.samplers.SampleEvent;
 import org.apache.jmeter.threads.JMeterContextService;
 import org.apache.jmeter.threads.JMeterVariables;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -22,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Jeff Ohrstrom
  */
 public abstract class AbstractUpdater {
+    private static final Logger log = LoggerFactory.getLogger(AbstractUpdater.class);
 
     public static String NULL = "null";
 
@@ -30,7 +34,6 @@ public abstract class AbstractUpdater {
 
     // helper lookup table for sample variables, so we don't loop over arrays every update.
     private Map<String, Integer> varIndexLookup;
-
 
     private ConcurrentHashMap<Integer, String> responseMetricsAsser = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Integer, String> responseMetrics = new ConcurrentHashMap<>();
@@ -85,8 +88,12 @@ public abstract class AbstractUpdater {
             if (name.equalsIgnoreCase("label")) {
                 value = event.getResult().getSampleLabel();
 
-            } else if (name.equalsIgnoreCase("threadgroup")) {
-                value = event.getThreadGroup();
+            } else if (name.equalsIgnoreCase("threadname")) {
+                value = event.getResult().getThreadName();
+
+            } else if (name.equalsIgnoreCase("code")) {    // code also reserved
+                value = event.getResult().getResponseCode();
+
             } else if (name.equalsIgnoreCase("success")) {
                 if (event.getResult().isSuccessful()) {
                     value = "true";
@@ -94,13 +101,9 @@ public abstract class AbstractUpdater {
                     value = "false";
                 }
 
-            } else if (name.equalsIgnoreCase("code")) {    // code also reserved
-                value = event.getResult().getResponseCode();
+            } else if (name.equalsIgnoreCase("threadgroup")) {
+                value = event.getThreadGroup();
 
-                // try to find it as a plain'ol variable.
-            } else if (name.equalsIgnoreCase("responseMessage")) {
-
-                value = event.getResult().getResponseMessage();
                 // try to find it as a plain'ol variable.
             } else if (this.varIndexLookup.get(name) != null) {
                 int idx = this.varIndexLookup.get(name);
@@ -137,23 +140,39 @@ public abstract class AbstractUpdater {
                 value = ctx.event.getResult().getFirstAssertionFailureMessage();
 
             } else if (name.equalsIgnoreCase("responsedata")) {
+                LinkedList<String> keysList = (LinkedList<String>) InitResponseDataMatchRows.getKeysList().clone();
                 String tmp = ctx.event.getResult().getResponseDataAsString();
+                if (keysList != null) {
+                    String[] lines = tmp.split("\n");
+                    String newLines = "";
+                    // traverse each line
+                    for (int j = 0; j < lines.length; j++) {
+                        boolean canMatch = true;
+                        // traverse each key
+                        int a = keysList.size();
+                        for (int k = 0; k < a; k++) {
+                            if (lines[j].contains(keysList.get(k))) {
+                                canMatch = false;
+                                keysList.remove(k);
+                                break;
+                            } else {
+                                canMatch = true;
+                            }
+                        }
 
-                String[] tmps = tmp.split("\n");
-                String newString = "";
-                for (int j = 0; j < tmps.length; j++) {
-                    if (j != 4 || j != 5 || j != 8 || j != 31 || j != 32) {
-                        newString = newString + tmps[j];
-                    } else {
-                        continue;
+                        if(canMatch){
+                            newLines = newLines + lines[j] + "\r\n";
+                        }
                     }
-                }
 
-                Integer rescode = newString.hashCode();
-                if (responseMetricsAsser.containsKey(rescode)) {
-                    value = responseMetricsAsser.get(rescode);
+                    Integer rescode = newLines.hashCode();
+                    if (responseMetricsAsser.containsKey(rescode)) {
+                        value = responseMetricsAsser.get(rescode);
+                    } else {
+                        responseMetricsAsser.put(rescode, tmp);
+                        value = tmp;
+                    }
                 } else {
-                    responseMetricsAsser.put(rescode, tmp);
                     value = tmp;
                 }
 
@@ -199,3 +218,4 @@ public abstract class AbstractUpdater {
     }
 
 }
+

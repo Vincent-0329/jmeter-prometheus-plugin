@@ -1,6 +1,7 @@
 package com.github.johrstrom.listener.updater;
 
 import com.github.johrstrom.listener.ListenerCollectorConfig;
+import com.github.johrstrom.listener.utils.ScheduleForLatency;
 import io.prometheus.client.Collector;
 import io.prometheus.client.Gauge;
 import io.prometheus.client.Histogram;
@@ -53,7 +54,8 @@ public class AggregatedTypeUpdater extends AbstractUpdater {
             case ResponseTime:
                 return result.getTime();
             case Latency:
-                return result.getLatency();
+                Long latency = ScheduleForLatency.getAVGLatency().get(event.getThreadGroup());
+                return latency == null ? 0 : latency;
             case IdleTime:
                 return result.getIdleTime();
             case ConnectTime:

@@ -35,7 +35,6 @@ public class ListenerCollectorConfig extends BaseCollectorConfig {
 		FailureTotal,
 		CountTotal,
 		SuccessRatio,
-		failureMessage,
 		failureMessageAssert;
 	}
 	

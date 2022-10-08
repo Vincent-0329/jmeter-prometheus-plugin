@@ -7,6 +7,7 @@ public class NOOPThreadMonitor implements JMeterThreadMonitor {
 
    @Override
    public void threadFinished(JMeterThread jmt) {
+
      // NOOP
    }
 

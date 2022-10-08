@@ -158,7 +158,7 @@ public class PrometheusServer {
         
 
         server.setExecutor(Executors.newSingleThreadExecutor());
-        server.start();      
+        server.start();
     }
     
     public synchronized void stop() {
